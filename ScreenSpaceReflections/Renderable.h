@@ -43,6 +43,7 @@ public:
 	void setViewMat(const mat4& viewMat);
 	void setProjMat(const mat4& projMat);
 	void setShaderParamNames(const string& modelMatName, const string& viewMatName, const string& projMatName);
+	inline void setShaderFloat(const string& paramName, float val);
 
 	void generateEmptyCubemap();
 	inline void activateProgram();
@@ -68,4 +69,11 @@ void Renderable::activateProgram()
 		ActiveProgram = gProgram;
 		glUseProgram(gProgram);
 	}
+}
+
+void Renderable::setShaderFloat(const string& paramName, float val)
+{
+	activateProgram();
+	GLuint loc = glGetUniformLocation(gProgram, paramName.c_str());
+	glUniform1f(loc, val);
 }

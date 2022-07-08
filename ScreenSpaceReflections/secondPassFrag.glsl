@@ -5,6 +5,7 @@ in vec2 texCoord;
 uniform sampler2D colorTexture;
 uniform sampler2D depthTexture;
 uniform sampler2D normalTexture;
+uniform sampler2D reflectionTexture;
 
 out vec4 fragColor;
 
@@ -25,7 +26,20 @@ void main()
 
 //    fragColor = vec4(0.0f);
 
-    fragColor = texture(colorTexture, texCoord);
+//    fragColor = texture(colorTexture, texCoord);
+    float reflective = texture(reflectionTexture, texCoord).r;
+
+    if (reflective > 0.1)
+    {
+        vec3 normal = texture(normalTexture, texCoord).rgb;
+        fragColor = vec4(reflective, 0, 0, 1);
+    }
+    else
+    {
+        fragColor = texture(colorTexture, texCoord);
+    }
+//        fragColor = texture(colorTexture, texCoord);
+
 //    fragColor = vec4(vec3(depth), 1.0);
 //    fragColor = texture(normalTexture, texCoord);
 

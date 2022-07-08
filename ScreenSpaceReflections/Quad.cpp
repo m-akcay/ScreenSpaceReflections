@@ -32,15 +32,20 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    glGenTextures(1, &reflectionTexture);
+    glBindTexture(GL_TEXTURE_2D, reflectionTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, reflectionTexture, 0);
 
-    /*GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT1  };
-    glDrawBuffers(3, drawBuffers);*/
 
    /* glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
@@ -77,6 +82,7 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     colorTextureLoc = glGetUniformLocation(gProgram, "colorTexture");
     depthTextureLoc = glGetUniformLocation(gProgram, "depthTexture");
     normalTextureLoc = glGetUniformLocation(gProgram, "normalTexture");
+    reflectionTextureLoc = glGetUniformLocation(gProgram, "reflectionTexture");
     
     std::cout << "HELO_colorTex->" << colorTexture << "   " << "HELO_colorTexLoc->" << colorTextureLoc << std::endl;
     std::cout << "HELO_depthTex->" << depthTexture << "   " << "HELO_depthTexLoc->" << depthTextureLoc << std::endl;

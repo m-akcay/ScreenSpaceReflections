@@ -9,6 +9,8 @@ private:
 	GLuint rbo;
 	GLuint depthTexture;
 	GLuint depthTextureLoc;
+	GLuint reflectionTexture;
+	GLuint reflectionTextureLoc;
 
 
 protected:
@@ -25,4 +27,5 @@ public:
 	void bindColorTexture() { glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, colorTexture); glUniform1i(colorTextureLoc, 0); }
 	void bindDepthTexture() { glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, depthTexture); glUniform1i(depthTextureLoc, 1); }
 	void bindNormalTexture() { glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_2D, normalTexture); glUniform1i(normalTextureLoc, 2); }
+	void bindReflectionTexture() { glActiveTexture(GL_TEXTURE3); glBindTexture(GL_TEXTURE_2D, reflectionTexture); glUniform1i(reflectionTextureLoc, 3); }
 };

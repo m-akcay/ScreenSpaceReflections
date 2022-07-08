@@ -84,7 +84,10 @@ void init()
     
     quad = std::make_shared<Quad>("secondPassVert.glsl", "secondPassFrag.glsl", 1200, 1200);
 
-    renderableObjects.push_back(std::make_shared<Mesh>("teapot.obj", "vert.glsl", "frag.glsl"));
+
+    auto teapot = std::make_shared<Mesh>("teapot.obj", "vert.glsl", "frag.glsl");
+    teapot->setShaderFloat("reflectiveness", 0.5f);
+    renderableObjects.push_back(teapot);
 
     renderableObjects.push_back(std::make_shared<Mesh>("cube.obj", "vert.glsl", "frag.glsl"));
     // renderableObjects.push_back(std::make_shared<Mesh>("cube.obj", "firstPassVert.glsl", "firstPassFrag.glsl"));
@@ -206,10 +209,11 @@ void renderScene()
     glBindFramebuffer(GL_FRAMEBUFFER, quad->getFbo());
     quad->bindNormalTexture();
     quad->bindDepthTexture();
+    quad->bindReflectionTexture();
     quad->bindColorTexture();
 
-    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers(3, drawBuffers);
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+    glDrawBuffers(4, drawBuffers);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

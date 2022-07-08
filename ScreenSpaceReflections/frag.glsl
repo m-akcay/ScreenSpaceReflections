@@ -14,6 +14,7 @@ vec3 ks = vec3(0.8, 0.8, 0.8);   // specular reflectance coefficient
 vec3 lightPos = vec3(5, 5, 5);   // light position in world coordinates
 
 uniform vec3 eyePos;
+uniform float reflectiveness = 0;
 
 in vec4 fragWorldPos;
 in vec3 fragWorldNor;
@@ -21,9 +22,9 @@ in vec2 texCoord;
 
 uniform sampler2D tex;
 
-layout (location=0) out vec4 fragColor;
-
-layout (location=1)out vec4 outNormal;
+out vec4 fragColor;
+out vec4 outNormal;
+out vec4 reflectionVal;
 
 void main(void)
 {
@@ -45,9 +46,5 @@ void main(void)
 
 	fragColor = vec4(diffuseColor + specularColor + ambientColor, 1);
 	outNormal = vec4(N, 1);
-//	fragColor = outNormal;
-//	fragColor = vec4(vec3(gl_FragCoord.z), 1);
-
-	// for normal
-	// fragColor = vec4(N, 1);
+	reflectionVal = vec4(reflectiveness, 0.0f, 0.0f, 1.0f);
 }
