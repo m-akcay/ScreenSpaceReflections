@@ -16,7 +16,7 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);*/
-
+    
 
     glGenTextures(1, &depthTexture);
     glBindTexture(GL_TEXTURE_2D, depthTexture);
@@ -25,13 +25,22 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+    
+    glGenTextures(1, &normalTexture);
+    glBindTexture(GL_TEXTURE_2D, normalTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalTexture, 0);
+
+    /*GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT1  };
+    glDrawBuffers(3, drawBuffers);*/
 
    /* glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
@@ -67,11 +76,11 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     
     colorTextureLoc = glGetUniformLocation(gProgram, "colorTexture");
     depthTextureLoc = glGetUniformLocation(gProgram, "depthTexture");
-    /*bindDepthTexture();
-    bindColorTexture();*/
-    bindColorTexture();
+    normalTextureLoc = glGetUniformLocation(gProgram, "normalTexture");
+    
     std::cout << "HELO_colorTex->" << colorTexture << "   " << "HELO_colorTexLoc->" << colorTextureLoc << std::endl;
     std::cout << "HELO_depthTex->" << depthTexture << "   " << "HELO_depthTexLoc->" << depthTextureLoc << std::endl;
+    std::cout << "HELO_normalTex->" << depthTexture << "   " << "HELO_normalTexLoc->" << normalTextureLoc << std::endl;
 	initBuffers();
 	
 }

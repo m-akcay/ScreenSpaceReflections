@@ -204,8 +204,12 @@ void drawModels(int face)
 void renderScene()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, quad->getFbo());
+    quad->bindNormalTexture();
     quad->bindDepthTexture();
     quad->bindColorTexture();
+
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(3, drawBuffers);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

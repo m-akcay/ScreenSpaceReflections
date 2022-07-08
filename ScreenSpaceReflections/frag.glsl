@@ -21,7 +21,9 @@ in vec2 texCoord;
 
 uniform sampler2D tex;
 
-out vec4 fragColor;
+layout (location=0) out vec4 fragColor;
+
+layout (location=1)out vec4 outNormal;
 
 void main(void)
 {
@@ -42,6 +44,8 @@ void main(void)
 	vec3 ambientColor = Iamb * ka;
 
 	fragColor = vec4(diffuseColor + specularColor + ambientColor, 1);
+	outNormal = vec4(N, 1);
+//	fragColor = outNormal;
 //	fragColor = vec4(vec3(gl_FragCoord.z), 1);
 
 	// for normal

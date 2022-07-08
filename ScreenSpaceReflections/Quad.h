@@ -22,6 +22,7 @@ public:
 	GLuint getDepthTexture() { return depthTexture; }
 	GLuint getDepthTextureLoc() { return depthTextureLoc; }
 
-	void bindDepthTexture() { glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, depthTexture); glUniform1i(depthTextureLoc, 1); }
 	void bindColorTexture() { glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, colorTexture); glUniform1i(colorTextureLoc, 0); }
+	void bindDepthTexture() { glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, depthTexture); glUniform1i(depthTextureLoc, 1); }
+	void bindNormalTexture() { glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_2D, normalTexture); glUniform1i(normalTextureLoc, 2); }
 };
