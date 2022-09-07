@@ -4,14 +4,14 @@ Skybox::Skybox(const std::vector<string>& faces, const string& vertName, const s
 {
 	gProgram = Util::initShaders(vertName, fragName);
 
-	cubemap = Util::loadCubemap(faces);
+	cubeTexture = Util::loadCubemap(faces);
 
     viewMatLoc = glGetUniformLocation(gProgram, "viewMat");
     projMatLoc = glGetUniformLocation(gProgram, "projMat");
     modelMatLoc = glGetUniformLocation(gProgram, "modelMat");
     setShaderCubemapParamName("cubeTex");
 
-    std::cout << "viewMatLoc->" << viewMatLoc << "\tprojMatLoc->" << projMatLoc << "\tcubemapLoc->" << cubemapLoc << std::endl;
+    std::cout << "viewMatLoc->" << viewMatLoc << "\tprojMatLoc->" << projMatLoc << "\tcubemapLoc->" << cubeTexLoc << std::endl;
 
 	gVertices.emplace_back(-1.0f, 1.0f, 1.0f);
 	gVertices.emplace_back(-1.0f, -1.0f, 1.0f);
@@ -58,7 +58,7 @@ Skybox::Skybox(const std::vector<string>& faces, const string& vertName, const s
 
 void Skybox::setShaderCubemapParamName(const string& name)
 {
-	cubemapLoc = glGetUniformLocation(gProgram, name.c_str());
+	cubeTexLoc = glGetUniformLocation(gProgram, name.c_str());
 }
 
 

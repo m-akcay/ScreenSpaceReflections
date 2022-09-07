@@ -18,14 +18,14 @@ protected:
 	GLuint modelMatLoc;
 	GLuint viewMatLoc;
 	GLuint projMatLoc;
-	GLuint cubemapLoc;
+	GLuint cubeTexLoc;
 	GLuint colorTextureLoc;
 	GLuint normalTextureLoc;
 	
 	mat4 modelMat;
 	mat4 viewMat;
 	mat4 projMat;
-	GLuint cubemap;
+	GLuint cubeTexture;
 	GLuint colorTexture;
 	GLuint normalTexture;
 

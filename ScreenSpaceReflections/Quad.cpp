@@ -1,6 +1,6 @@
 #include "Quad.h"
 
-Quad::Quad(const string& vertName, const string& fragName, uint width, uint height)
+Quad::Quad(const string& vertName, const string& fragName, uint width, uint height, const std::vector<string>& cubemapFaces)
 {
     
     glGenTextures(1, &colorTexture);
@@ -8,15 +8,6 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  /*  glGenTextures(1, &depthTexture);
-    glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, (void*)0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);*/
-    
 
     glGenTextures(1, &depthTexture);
     glBindTexture(GL_TEXTURE_2D, depthTexture);
@@ -38,6 +29,13 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    glGenTextures(1, &posTexture);
+    glBindTexture(GL_TEXTURE_2D, posTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
@@ -45,16 +43,10 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalTexture, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, reflectionTexture, 0);
-
-
-   /* glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);  
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);*/
-
-
-
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, posTexture, 0);
+    
+    cubeTexture = Util::loadCubemap(std::vector<string>{"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"});
+    
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
 	    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
@@ -83,10 +75,13 @@ Quad::Quad(const string& vertName, const string& fragName, uint width, uint heig
     depthTextureLoc = glGetUniformLocation(gProgram, "depthTexture");
     normalTextureLoc = glGetUniformLocation(gProgram, "normalTexture");
     reflectionTextureLoc = glGetUniformLocation(gProgram, "reflectionTexture");
+    posTextureLoc = glGetUniformLocation(gProgram, "posTexture");
+    cubeTexLoc = glGetUniformLocation(gProgram, "cubeTexture");
     
     std::cout << "HELO_colorTex->" << colorTexture << "   " << "HELO_colorTexLoc->" << colorTextureLoc << std::endl;
     std::cout << "HELO_depthTex->" << depthTexture << "   " << "HELO_depthTexLoc->" << depthTextureLoc << std::endl;
-    std::cout << "HELO_normalTex->" << depthTexture << "   " << "HELO_normalTexLoc->" << normalTextureLoc << std::endl;
+    std::cout << "HELO_normalTex->" << normalTexture << "   " << "HELO_normalTexLoc->" << normalTextureLoc << std::endl;
+    std::cout << "HELO_cubeTex->" << cubeTexture << "   " << "HELO_cubeTexLoc->" << cubeTexLoc << std::endl;
 	initBuffers();
 	
 }

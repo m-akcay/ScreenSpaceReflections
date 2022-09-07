@@ -20,8 +20,11 @@ in vec3 fragWorldNor;
 in vec3 texCoord;
 
 uniform samplerCube cubeTex;
+uniform float reflectiveness = 0;
 
 out vec4 fragColor;
+out vec4 outNormal;
+out vec4 reflectionVal;
 
 void main(void)
 {
@@ -41,4 +44,6 @@ void main(void)
 	vec3 specularColor = I * ks * pow(max(0, NdotH), 100);
 	vec3 ambientColor = Iamb * ka;
 	fragColor = vec4(diffuseColor + specularColor + ambientColor, 1);
+	outNormal = vec4(N, 1);
+	reflectionVal = vec4(reflectiveness, 0.0f, 0.0f, 1.0f);
 }

@@ -35,7 +35,7 @@ GLuint rbo;
 
 GLuint dynamicCubemap;
 GLuint dynamicCubemapLoc;
-const vec3 fixedObjPos(0, -2, -8);
+const vec3 fixedObjPos(0, -4, -8);
 
 vec3 orbitingObjPos(0, 0, -1.5f);
 
@@ -77,14 +77,18 @@ void setUpDynamicCubemap()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+GLuint cubemap;
+GLuint cubemapLoc;
+
 void init()
 {
     auto faces = std::vector<string>{ "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg" };
     skybox = std::make_shared<Skybox>(faces, "skyVert.glsl", "skyFrag.glsl");
     
-    quad = std::make_shared<Quad>("secondPassVert.glsl", "secondPassFrag.glsl", 1200, 1200);
+    quad = std::make_shared<Quad>("secondPassVert.glsl", "secondPassFrag.glsl", 1200, 1200, faces);
 
 
+    //auto cube = std::make_shared<Mesh>("cube.obj", "vert.glsl", "frag.glsl");
     auto teapot = std::make_shared<Mesh>("teapot.obj", "vert.glsl", "frag.glsl");
     teapot->setShaderFloat("reflectiveness", 0.5f);
     renderableObjects.push_back(teapot);
@@ -94,9 +98,13 @@ void init()
 
     eyePosLoc = glGetUniformLocation(renderableObjects[0]->getProgram(), "inEyePos");
     glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
-    setUpDynamicCubemap();
-    dynamicCubemapLoc = glGetUniformLocation(renderableObjects[0]->getProgram(), "cubeTex");
-    glUniform1i(dynamicCubemapLoc, dynamicCubemap);
+    quad->activateProgram();
+    eyePosLoc = glGetUniformLocation(quad->getProgram(), "eyePos");
+    glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+    
+    cubemap = Util::loadCubemap(faces);
+    cubemapLoc = glGetUniformLocation(quad->getProgram(), "skybox");
+    //std::cout << "CUBEMAPLOCCCC_________" << cubemapLoc << std::endl;
     glEnable(GL_DEPTH_TEST);
 
 }
@@ -179,7 +187,7 @@ void drawModels(int face)
 
             if (i == 0)
             {
-                glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubemap);
+                //glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubemap);
                 auto matT = glm::translate(mat4(1.0f), fixedObjPos);
                 obj->setModelMat(matT);
             }
@@ -207,15 +215,18 @@ void drawModels(int face)
 void renderScene()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, quad->getFbo());
-    quad->bindNormalTexture();
-    quad->bindDepthTexture();
-    quad->bindReflectionTexture();
+    quad->activateProgram();
     quad->bindColorTexture();
+    quad->bindDepthTexture();
+    quad->bindNormalTexture();
+    quad->bindPosTexture();
+    quad->bindReflectionTexture();
+    quad->bindCubeTex();
 
-    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-    glDrawBuffers(4, drawBuffers);
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+    glDrawBuffers(5, drawBuffers);
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, 1200, 1200);
@@ -223,11 +234,10 @@ void renderScene()
     drawModels(6);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     quad->activateProgram();
-
 
     glBindVertexArray(quad->getVao());
     glDisable(GL_DEPTH_TEST);
