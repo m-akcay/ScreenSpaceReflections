@@ -9,6 +9,7 @@ using namespace std;
 int gWidth, gHeight;
 
 GLint eyePosLoc;
+GLint projMatLoc;
 
 mat4 projectionMatrix;
 mat4 viewingMatrix;
@@ -46,8 +47,9 @@ void updateOrbitingObj()
     const vec3 baseUp(0, 1, 0);
     const float distance = 4;
     
-    vec3 vec2Add = glm::rotate(mat4(1.0f), angle, baseUp) * vec4(baseVec, 1);
-    orbitingObjPos = fixedObjPos + vec2Add * distance;
+    //vec3 vec2Add = glm::rotate(mat4(1.0f), angle, baseUp) * vec4(baseVec, 1);
+    //orbitingObjPos = fixedObjPos + vec2Add * distance;
+    orbitingObjPos = fixedObjPos + vec3(3, 1, 1.5f);
     orbitingObjPos.y += 1;
     angle += 0.01f;
 }
@@ -101,6 +103,11 @@ void init()
     quad->activateProgram();
     eyePosLoc = glGetUniformLocation(quad->getProgram(), "eyePos");
     glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+
+    float fovyRad = (float)(45.0 / 180.0) * M_PI;
+    projectionMatrix = glm::perspective(fovyRad, 1.0f, 0.1f, 100.0f);
+    projMatLoc = glGetUniformLocation(quad->getProgram(), "gProjectionMatrix");
+    glUniformMatrix4fv(projMatLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     
     cubemap = Util::loadCubemap(faces);
     cubemapLoc = glGetUniformLocation(quad->getProgram(), "skybox");
