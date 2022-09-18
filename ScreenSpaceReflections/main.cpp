@@ -9,6 +9,8 @@ using namespace std;
 int gWidth, gHeight;
 
 GLint eyePosLoc;
+GLint eyePosLoc1;
+GLint eyePosLoc2;
 GLint projMatLoc;
 
 mat4 projectionMatrix;
@@ -45,13 +47,13 @@ void updateOrbitingObj()
     static float angle = 0;
     const vec3 baseVec(0, 0, 1);
     const vec3 baseUp(0, 1, 0);
-    const float distance = 4;
+    const float distance = 3;
     
-    //vec3 vec2Add = glm::rotate(mat4(1.0f), angle, baseUp) * vec4(baseVec, 1);
-    //orbitingObjPos = fixedObjPos + vec2Add * distance;
-    orbitingObjPos = fixedObjPos + vec3(3, 1, 1.5f);
+    vec3 vec2Add = glm::rotate(mat4(1.0f), angle, baseUp) * vec4(baseVec, 1);
+    orbitingObjPos = fixedObjPos + vec2Add * distance;
+    //orbitingObjPos = fixedObjPos + vec3(3, 1, 1.5f);
     orbitingObjPos.y += 1;
-    angle += 0.01f;
+    angle += 0.002f;
 }
 
 void renderScene();
@@ -90,16 +92,28 @@ void init()
     quad = std::make_shared<Quad>("secondPassVert.glsl", "secondPassFrag.glsl", 1200, 1200, faces);
 
 
-    //auto cube = std::make_shared<Mesh>("cube.obj", "vert.glsl", "frag.glsl");
     auto teapot = std::make_shared<Mesh>("teapot.obj", "vert.glsl", "frag.glsl");
     teapot->setShaderFloat("reflectiveness", 0.5f);
     renderableObjects.push_back(teapot);
 
+    auto teapot2 = std::make_shared<Mesh>("teapot.obj", "vert.glsl", "frag.glsl");
+    teapot2->setShaderFloat("reflectiveness", 0.5f);
+    renderableObjects.push_back(teapot2);
+
+    auto teapot3 = std::make_shared<Mesh>("teapot.obj", "vert.glsl", "frag.glsl");
+    teapot3->setShaderFloat("reflectiveness", 0.5f);
+    renderableObjects.push_back(teapot3);
+
+    auto cube = std::make_shared<Mesh>("cube.obj", "vert.glsl", "frag.glsl");
     renderableObjects.push_back(std::make_shared<Mesh>("cube.obj", "vert.glsl", "frag.glsl"));
-    // renderableObjects.push_back(std::make_shared<Mesh>("cube.obj", "firstPassVert.glsl", "firstPassFrag.glsl"));
 
     eyePosLoc = glGetUniformLocation(renderableObjects[0]->getProgram(), "inEyePos");
     glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+    eyePosLoc1 = glGetUniformLocation(renderableObjects[1]->getProgram(), "inEyePos");
+    glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+    eyePosLoc2 = glGetUniformLocation(renderableObjects[2]->getProgram(), "inEyePos");
+    glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+
     quad->activateProgram();
     eyePosLoc = glGetUniformLocation(quad->getProgram(), "eyePos");
     glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
@@ -125,47 +139,9 @@ void drawModels(int face)
     mat4 viewMat;
     mat4 skyboxViewMat;
     vec3 fwdVec;
-    if (face == 0) // px
-    {
-        fwdVec = vec3(1, 0, 0);
-        viewMat = glm::lookAt(fixedObjPos, fixedObjPos + fwdVec, vec3(0, -1, 0));
-        skyboxViewMat = glm::lookAt(vec3(0.0f),  fwdVec, vec3(0, -1, 0));
-    }
-    else if (face == 1) // nx
-    {
-        fwdVec = vec3(-1, 0, 0);
-        viewMat = glm::lookAt(fixedObjPos, fixedObjPos + fwdVec, vec3(0, -1, 0));
-        skyboxViewMat = glm::lookAt(vec3(0.0f), fwdVec, vec3(0, -1, 0));
-    }
-    else if (face == 2) // py
-    {
-        fwdVec = vec3(0, 1, 0);
-        viewMat = glm::lookAt(fixedObjPos, fixedObjPos + fwdVec, vec3(0, 0, 1));
-        skyboxViewMat = glm::lookAt(vec3(0.0f), fwdVec, vec3(0, 0, 1));
-    }
-    else if (face == 3) // ny
-    {
-        fwdVec = vec3(0, -1, 0);
-        viewMat = glm::lookAt(fixedObjPos, fixedObjPos + fwdVec, vec3(0, 0, -1));
-        skyboxViewMat = glm::lookAt(vec3(0.0f), fwdVec, vec3(0, 0, -1));
-    }
-    else if (face == 4) // pz
-    {
-        fwdVec = vec3(0, 0, 1);
-        viewMat = glm::lookAt(fixedObjPos, fixedObjPos + fwdVec, vec3(0, -1, 0));
-        skyboxViewMat = glm::lookAt(vec3(0.0f), fwdVec, vec3(0, -1, 0));
-    }
-    else if (face == 5) // nz
-    {
-        fwdVec = vec3(0, 0, -1);
-        viewMat = glm::lookAt(fixedObjPos, fwdVec, vec3(0, -1, 0));
-        skyboxViewMat = glm::lookAt(vec3(0.0f), fwdVec, vec3(0, -1, 0));
-    }
-    else if (face == 6) // main render
-    {
-        viewMat = glm::lookAt(eyePos, eyePos + gaze, vec3(0, 1, 0));
-        skyboxViewMat = glm::lookAt(vec3(0.0f), gaze, vec3(0, 1, 0));
-    }
+   
+    viewMat = glm::lookAt(eyePos, eyePos + gaze, vec3(0, 1, 0));
+    skyboxViewMat = glm::lookAt(vec3(0.0f), gaze, vec3(0, 1, 0));
 
     auto projMat = glm::perspective(fovyRad, 1.0f, 0.01f, 100.0f);
     {
@@ -194,19 +170,27 @@ void drawModels(int face)
 
             if (i == 0)
             {
-                //glBindTexture(GL_TEXTURE_CUBE_MAP, dynamicCubemap);
                 auto matT = glm::translate(mat4(1.0f), fixedObjPos);
+                matT = glm::scale(matT, vec3(0.75f));
                 obj->setModelMat(matT);
             }
             else if (i == 1)
             {
-                auto matT = glm::translate(mat4(1.0f), orbitingObjPos);
-                matT = glm::scale(matT, vec3(0.5f));
+                auto matT = glm::translate(mat4(1.0f), fixedObjPos + vec3(-6, 0, 0));
+                matT = glm::scale(matT, vec3(0.75f));
+                obj->setModelMat(matT);
+            }
+            else if (i == 2)
+            {
+                auto matT = glm::translate(mat4(1.0f), fixedObjPos + vec3(6, 0, 0));
+                matT = glm::scale(matT, vec3(0.75f));
                 obj->setModelMat(matT);
             }
             else
             {
-
+                auto matT = glm::translate(mat4(1.0f), orbitingObjPos);
+                matT = glm::scale(matT, vec3(0.25f));
+                obj->setModelMat(matT);
             }
 
             obj->setViewMat(viewMat);
@@ -230,8 +214,8 @@ void renderScene()
     quad->bindReflectionTexture();
     quad->bindCubeTex();
 
-    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-    glDrawBuffers(5, drawBuffers);
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5};
+    glDrawBuffers(6, drawBuffers);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -288,33 +272,45 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         eyePos += up * 0.5f;
         glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc1, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc2, eyePos.x, eyePos.y, eyePos.z);
     }
     else if (key == GLFW_KEY_E && action == GLFW_PRESS)
     {
         eyePos -= up * 0.5f;
         glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc1, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc2, eyePos.x, eyePos.y, eyePos.z);
     }
     else if (key == GLFW_KEY_W && action == GLFW_PRESS)
     {
         eyePos += gaze * 0.5f;
         glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc1, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc2, eyePos.x, eyePos.y, eyePos.z);
     }
     else if (key == GLFW_KEY_S && action == GLFW_PRESS)
     {
         eyePos -= gaze * 0.5f;
         glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc1, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc2, eyePos.x, eyePos.y, eyePos.z);
     }
     else if (key == GLFW_KEY_A && action == GLFW_PRESS)
     {
         auto right = glm::normalize(glm::cross(gaze, up));
         eyePos -= right * 0.5f;
         glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc1, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc2, eyePos.x, eyePos.y, eyePos.z);
     }
     else if (key == GLFW_KEY_D && action == GLFW_PRESS)
     {
         auto right = glm::normalize(glm::cross(gaze, up));
         eyePos += right * 0.5f;
         glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc1, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc2, eyePos.x, eyePos.y, eyePos.z);
     }
     else if (key == GLFW_KEY_G && action == GLFW_PRESS)
     {
@@ -322,6 +318,8 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
         //activeProgramIndex = 0;
         gaze = glm::normalize(glm::rotate(mat4(1.0f), 1.0f, vec3(0, 1, 0)) * vec4(gaze, 1));
         glUniform3f(eyePosLoc, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc1, eyePos.x, eyePos.y, eyePos.z);
+        glUniform3f(eyePosLoc2, eyePos.x, eyePos.y, eyePos.z);
         //eyePos.z -= 0.11f;
     }
     else if (key == GLFW_KEY_P && action == GLFW_PRESS)
@@ -389,8 +387,19 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 void mainLoop(GLFWwindow* window)
 {
+    double lastTime = glfwGetTime();
+    unsigned long nbFrames = 0;
     while (!glfwWindowShouldClose(window))
     {
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+            double fps = 1 / (1000.0 / double(nbFrames)) * 100;
+            printf("%f fps\n", fps);
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
         display();
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -424,7 +433,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     }
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     // Initialize GLEW to setup the OpenGL Function pointers
     if (GLEW_OK != glewInit())
