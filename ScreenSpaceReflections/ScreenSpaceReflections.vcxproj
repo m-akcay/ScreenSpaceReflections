@@ -149,7 +149,6 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="Renderable.cpp" />
-    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
@@ -157,20 +156,11 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Renderable.h" />
-    <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="armadillo.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </Object>
-    <Object Include="bunny.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </Object>
     <Object Include="cube.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -189,11 +179,7 @@
     <Image Include="top.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="firstPassFrag.glsl" />
-    <None Include="firstPassVert.glsl" />
     <None Include="frag.glsl" />
-    <None Include="reflFrag.glsl" />
-    <None Include="reflVert.glsl" />
     <None Include="secondPassFrag.glsl" />
     <None Include="secondPassVert.glsl" />
     <None Include="skyFrag.glsl" />

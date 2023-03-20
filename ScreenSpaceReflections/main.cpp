@@ -58,29 +58,6 @@ void updateOrbitingObj()
 
 void renderScene();
 
-void setUpDynamicCubemap()
-{
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-    dynamicCubemap = Util::emptyCubemap(1200);
-    for (int i = 0; i < 6; ++i)
-    {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, dynamicCubemap, 0);
-    }
-
-
-    //glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1200, 1200);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-  
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 GLuint cubemap;
 GLuint cubemapLoc;
 
@@ -125,7 +102,6 @@ void init()
     
     cubemap = Util::loadCubemap(faces);
     cubemapLoc = glGetUniformLocation(quad->getProgram(), "skybox");
-    //std::cout << "CUBEMAPLOCCCC_________" << cubemapLoc << std::endl;
     glEnable(GL_DEPTH_TEST);
 
 }
