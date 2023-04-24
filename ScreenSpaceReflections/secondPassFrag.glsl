@@ -54,9 +54,14 @@ void main()
         }
 
         if (hit)
+        {
             fragColor = texture(colorTexture, hitPos);
+//            fragColor = vec4(0, 0, 0, 1);
+        }
         else
+        {
             fragColor = texture(cubeTexture, reflected);
+        }
     }
     else
     {

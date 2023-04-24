@@ -24,20 +24,14 @@ bool firstMouse = true;
 bool rightClicked = false;
 float yaw = -90.0f;
 float pitch = 0.0f;
-float lastX = 1200 / 2.0f;
-float lastY = 1200 / 2.0f;
+float lastX = 800 / 2.0f;
+float lastY = 800 / 2.0f;
 float fov = 45.0f;
 
 std::shared_ptr<Quad> quad;
 std::shared_ptr<Skybox> skybox;
 std::vector<std::shared_ptr<Renderable>> renderableObjects;
 
-GLuint fbo;
-GLuint textureColorbuffer;
-GLuint rbo;
-
-GLuint dynamicCubemap;
-GLuint dynamicCubemapLoc;
 const vec3 fixedObjPos(0, -4, -8);
 
 vec3 orbitingObjPos(0, 0, -1.5f);
@@ -51,9 +45,8 @@ void updateOrbitingObj()
     
     vec3 vec2Add = glm::rotate(mat4(1.0f), angle, baseUp) * vec4(baseVec, 1);
     orbitingObjPos = fixedObjPos + vec2Add * distance;
-    //orbitingObjPos = fixedObjPos + vec3(3, 1, 1.5f);
     orbitingObjPos.y += 1;
-    angle += 0.002f;
+    angle += 0.01f;
 }
 
 void renderScene();
@@ -66,7 +59,7 @@ void init()
     auto faces = std::vector<string>{ "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg" };
     skybox = std::make_shared<Skybox>(faces, "skyVert.glsl", "skyFrag.glsl");
     
-    quad = std::make_shared<Quad>("secondPassVert.glsl", "secondPassFrag.glsl", 1200, 1200, faces);
+    quad = std::make_shared<Quad>("secondPassVert.glsl", "secondPassFrag.glsl", 800, 800, faces);
 
 
     auto teapot = std::make_shared<Mesh>("teapot.obj", "vert.glsl", "frag.glsl");
@@ -196,7 +189,7 @@ void renderScene()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, 1200, 1200);
+    glViewport(0, 0, 800, 800);
 
     drawModels(6);
     
@@ -210,9 +203,6 @@ void renderScene()
     glDisable(GL_DEPTH_TEST);
 
     glDrawElements(GL_TRIANGLES, quad->getIndexCount(), GL_UNSIGNED_INT, (void*)0);
-
-
-    updateOrbitingObj();
 }
 
 void display()
@@ -361,6 +351,11 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     gaze = glm::normalize(front);
 }
 
+void fixedUpdate()
+{
+    updateOrbitingObj();
+}
+
 void mainLoop(GLFWwindow* window)
 {
     double lastTime = glfwGetTime();
@@ -369,19 +364,24 @@ void mainLoop(GLFWwindow* window)
     {
         double currentTime = glfwGetTime();
         nbFrames++;
-        if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
-            // printf and reset timer
-            double fps = 1 / (1000.0 / double(nbFrames)) * 100;
-            printf("%f fps\n", fps);
-            nbFrames = 0;
-            lastTime += 1.0;
+        //if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+        //    // printf and reset timer
+        //    double fps = 1 / (1000.0 / double(nbFrames)) * 100;
+        //    printf("%f fps\n", fps);
+        //    nbFrames = 0;
+        //    lastTime += 1.0;
+        //}
+
+        if (currentTime - lastTime > 0.03f)
+        {
+            fixedUpdate();
+            lastTime += 0.03f;
         }
         display();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 }
-
 
 int main(int argc, char** argv)   // Create Main Function For Bringing It All Together
 {
@@ -399,7 +399,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    int width = 1200, height = 1200;
+    int width = 800, height = 800;
     window = glfwCreateWindow(width, height, "Simple Example", NULL, NULL);
 
     if (!window)
